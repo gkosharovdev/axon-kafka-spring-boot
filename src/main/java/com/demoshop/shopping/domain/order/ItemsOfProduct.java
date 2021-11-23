@@ -6,7 +6,7 @@ import javax.money.MonetaryAmount;
 
 @Value(staticConstructor = "of")
 public class ItemsOfProduct {
-    ProductId productId;
+    String productId;
     int quantity;
     MonetaryAmount cost;
 }

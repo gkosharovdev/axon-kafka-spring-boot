@@ -2,27 +2,22 @@ package com.demoshop.shopping.domain.order;
 
 import com.demoshop.shopping.application.order.commands.AbandonOrder;
 import com.demoshop.shopping.application.order.commands.AddItemsOfProduct;
-import com.demoshop.shopping.application.order.commands.AnonymizeOrder;
-import com.demoshop.shopping.application.order.commands.DeanonymizeOrder;
-import com.demoshop.shopping.application.order.commands.RemoveItemsOfProduct;
+import com.demoshop.shopping.application.order.commands.DropItemsOfProduct;
+import com.demoshop.shopping.application.order.commands.InitiateOrder;
 import com.demoshop.shopping.domain.order.events.ItemsOfProductAdded;
 import com.demoshop.shopping.domain.order.events.ItemsOfProductRemoved;
 import com.demoshop.shopping.domain.order.events.OrderAbandoned;
-import com.demoshop.shopping.domain.order.events.OrderAnonymized;
-import com.demoshop.shopping.domain.order.events.OrderDeanonymized;
+import com.demoshop.shopping.domain.order.events.OrderInitiated;
 import lombok.extern.slf4j.Slf4j;
 import org.axonframework.commandhandling.CommandHandler;
 import org.axonframework.eventsourcing.EventSourcingHandler;
 import org.axonframework.modelling.command.AggregateIdentifier;
 import org.axonframework.modelling.command.AggregateLifecycle;
-import org.axonframework.modelling.command.CreationPolicy;
 import org.axonframework.spring.stereotype.Aggregate;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
-
-import static org.axonframework.modelling.command.AggregateCreationPolicy.CREATE_IF_MISSING;
 
 @Aggregate
 @Slf4j
@@ -30,11 +25,19 @@ public class Order {
 
   @AggregateIdentifier private OrderId orderId;
 
-  private Map<ProductId, ItemsOfProduct> items;
+  private Map<String, ItemsOfProduct> items;
   private CustomerId customerId;
 
+  public Order() {}
+
   @CommandHandler
-  @CreationPolicy(CREATE_IF_MISSING)
+  public Order(InitiateOrder command) {
+    var event = OrderInitiated.of(command.getOrderId(), command.getCustomerId());
+    AggregateLifecycle.apply(event);
+    log.info("Customer {} initiated an order {}", command.getCustomerId(), command.getOrderId());
+  }
+
+  @CommandHandler
   public void handleCommand(AddItemsOfProduct command) {
     var event =
         ItemsOfProductAdded.of(
@@ -44,15 +47,14 @@ public class Order {
             command.getCostPerItem());
     AggregateLifecycle.apply(event);
     log.info(
-        "{} items of {} added to order {} at {}",
+        "{} items of {} added to order {}",
         command.getNumberOfItems(),
         command.getProductId(),
-        command.getOrderId(),
-        command.getAddedAt());
+        command.getOrderId());
   }
 
   @CommandHandler
-  public void handleCommand(RemoveItemsOfProduct command) {
+  public void handleCommand(DropItemsOfProduct command) {
     var event =
         ItemsOfProductRemoved.of(
             command.getOrderId(), command.getProductId(), command.getNumberOfItems());
@@ -65,37 +67,16 @@ public class Order {
   }
 
   @CommandHandler
-  public void handleCommand(DeanonymizeOrder command) {
-    var event =
-        OrderDeanonymized.of(
-            command.getOrderId(), command.getCustomerId());
-    AggregateLifecycle.apply(event);
-    log.info(
-        "Customer {} associated with order {}",
-        command.getCustomerId(),
-        command.getOrderId());
-  }
-
-  @CommandHandler
-  public void handleCommand(AnonymizeOrder command) {
-    var event =
-        OrderAnonymized.of(
-            command.getOrderId());
-    AggregateLifecycle.apply(event);
-    log.info(
-        "Order {} anonymized",
-        command.getOrderId());
-  }
-
-  @CommandHandler
   public void handleCommand(AbandonOrder command) {
-    var event =
-        OrderAbandoned.of(
-            command.getOrderId());
+    var event = OrderAbandoned.of(command.getOrderId());
     AggregateLifecycle.apply(event);
-    log.info(
-        "Order {} abandoned",
-        command.getOrderId());
+    log.info("Order {} abandoned", command.getOrderId());
+  }
+
+  @EventSourcingHandler
+  public void applyEvent(OrderInitiated event) {
+    this.orderId = event.getOrderId();
+    this.customerId = event.getCustomerId();
   }
 
   @EventSourcingHandler
@@ -131,22 +112,14 @@ public class Order {
     assertEnoughQuantityOfItems(event.getProductId(), event.getQuantity());
 
     var itemsOfProduct = this.items.get(event.getProductId());
-    if(itemsOfProduct.getQuantity() > event.getQuantity()) {
-      int newQuantity =  itemsOfProduct.getQuantity() - event.getQuantity();
-      this.items.put(event.getProductId(), ItemsOfProduct.of(event.getProductId(), newQuantity, itemsOfProduct.getCost()));
-    }else{
+    if (itemsOfProduct.getQuantity() > event.getQuantity()) {
+      int newQuantity = itemsOfProduct.getQuantity() - event.getQuantity();
+      this.items.put(
+          event.getProductId(),
+          ItemsOfProduct.of(event.getProductId(), newQuantity, itemsOfProduct.getCost()));
+    } else {
       this.items.remove(event.getProductId());
     }
-  }
-
-  @EventSourcingHandler
-  public void applyEvent(OrderDeanonymized event) {
-    this.customerId = event.getCustomerId();
-  }
-
-  @EventSourcingHandler
-  public void applyEvent(OrderAnonymized event) {
-    this.customerId = null;
   }
 
   @EventSourcingHandler
@@ -154,15 +127,14 @@ public class Order {
     AggregateLifecycle.markDeleted();
   }
 
-
-  private void assertEnoughQuantityOfItems(ProductId productId, int quantity) {
-    if(this.items.containsKey(productId) && this.items.get(productId).getQuantity() < quantity) {
+  private void assertEnoughQuantityOfItems(String productId, int quantity) {
+    if (this.items.containsKey(productId) && this.items.get(productId).getQuantity() < quantity) {
       throw new NotAsManyItemsException(this.orderId, productId);
     }
   }
 
-  private void assertItemsOfProductExist(ProductId productId) {
-    if(!this.items.containsKey(productId)) {
+  private void assertItemsOfProductExist(String productId) {
+    if (!this.items.containsKey(productId)) {
       throw new NoSuchItemsException(this.orderId, productId);
     }
   }

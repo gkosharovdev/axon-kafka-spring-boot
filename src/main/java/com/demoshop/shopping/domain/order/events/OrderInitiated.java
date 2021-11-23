@@ -1,13 +1,11 @@
-package com.demoshop.shopping.application.order.commands;
+package com.demoshop.shopping.domain.order.events;
 
 import com.demoshop.shopping.domain.order.CustomerId;
 import com.demoshop.shopping.domain.order.OrderId;
 import lombok.Value;
-import org.axonframework.modelling.command.TargetAggregateIdentifier;
 
 @Value(staticConstructor = "of")
-public class DeanonymizeOrder {
-    @TargetAggregateIdentifier
+public class OrderInitiated {
     OrderId orderId;
     CustomerId customerId;
 }
