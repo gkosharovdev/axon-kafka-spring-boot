@@ -5,9 +5,6 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class ProductProjectionServiceImpl implements ProductProjectionService {
-    @Override
-    public void applyEvent(ProductSupplied event) {
-
-    }
+  @Override
+  public void applyEvent(ProductSupplied event) {}
 }
-

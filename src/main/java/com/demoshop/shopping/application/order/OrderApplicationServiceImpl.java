@@ -8,7 +8,6 @@ import com.demoshop.shopping.application.order.commands.InitiateOrder;
 import com.demoshop.shopping.domain.order.CustomerId;
 import com.demoshop.shopping.domain.order.OrderId;
 import com.demoshop.shopping.domain.product.ProductRepository;
-import com.demoshop.shopping.infrastructure.http.OrderDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.axonframework.commandhandling.gateway.CommandGateway;

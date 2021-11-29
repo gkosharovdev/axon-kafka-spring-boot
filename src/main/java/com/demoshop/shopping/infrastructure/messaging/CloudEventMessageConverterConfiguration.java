@@ -6,8 +6,8 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class CloudEventMessageConverterConfiguration {
-	@Bean
-	public CloudEventMessageConverter cloudEventMessageConverter() {
-		return new CloudEventMessageConverter();
-	}
+  @Bean
+  public CloudEventMessageConverter cloudEventMessageConverter() {
+    return new CloudEventMessageConverter();
+  }
 }

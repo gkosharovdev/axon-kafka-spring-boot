@@ -6,6 +6,5 @@ import org.axonframework.modelling.command.TargetAggregateIdentifier;
 
 @Value(staticConstructor = "of")
 public class CheckoutOrder {
-    @TargetAggregateIdentifier
-    OrderId orderId;
+  @TargetAggregateIdentifier OrderId orderId;
 }

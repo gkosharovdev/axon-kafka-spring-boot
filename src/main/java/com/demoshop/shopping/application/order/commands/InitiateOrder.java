@@ -7,7 +7,6 @@ import org.axonframework.modelling.command.TargetAggregateIdentifier;
 
 @Value(staticConstructor = "of")
 public class InitiateOrder {
-    @TargetAggregateIdentifier
-    OrderId orderId;
-    CustomerId customerId;
+  @TargetAggregateIdentifier OrderId orderId;
+  CustomerId customerId;
 }

@@ -8,16 +8,15 @@ import com.demoshop.shopping.domain.order.events.ItemsOfProductAdded;
 import com.demoshop.shopping.domain.order.events.ItemsOfProductRemoved;
 import com.demoshop.shopping.domain.order.events.OrderAbandoned;
 import com.demoshop.shopping.domain.order.events.OrderInitiated;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.axonframework.commandhandling.CommandHandler;
 import org.axonframework.eventsourcing.EventSourcingHandler;
 import org.axonframework.modelling.command.AggregateIdentifier;
 import org.axonframework.modelling.command.AggregateLifecycle;
 import org.axonframework.spring.stereotype.Aggregate;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
 
 @Aggregate
 @Slf4j

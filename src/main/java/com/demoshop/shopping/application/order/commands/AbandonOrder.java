@@ -6,6 +6,5 @@ import org.axonframework.modelling.command.TargetAggregateIdentifier;
 
 @Value(staticConstructor = "of")
 public class AbandonOrder {
-    @TargetAggregateIdentifier
-    OrderId orderId;
+  @TargetAggregateIdentifier OrderId orderId;
 }

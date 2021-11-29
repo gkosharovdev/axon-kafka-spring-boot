@@ -1,19 +1,18 @@
 package com.demoshop.shopping.domain.order;
 
-import lombok.Value;
-
 import java.util.UUID;
+import lombok.Value;
 
 @Value(staticConstructor = "of")
 public class OrderId {
-    String id;
+  String id;
 
-    public static OrderId from(CustomerId customerId) {
-        return OrderId.of(String.format("%s-%s", customerId, UUID.randomUUID()));
-    }
+  public static OrderId from(CustomerId customerId) {
+    return OrderId.of(String.format("%s-%s", customerId, UUID.randomUUID()));
+  }
 
-    @Override
-    public String toString() {
-        return id;
-    }
+  @Override
+  public String toString() {
+    return id;
+  }
 }

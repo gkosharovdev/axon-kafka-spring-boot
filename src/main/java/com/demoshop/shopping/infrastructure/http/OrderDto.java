@@ -1,10 +1,11 @@
 package com.demoshop.shopping.infrastructure.http;
 
+import java.util.Map;
 import lombok.Value;
 
 @Value(staticConstructor = "of")
-public class AddItemRequest {
+public class OrderDto {
   String orderId;
-  String itemId;
-  int quantity;
+  String customerId;
+  Map<String, Integer> items;
 }

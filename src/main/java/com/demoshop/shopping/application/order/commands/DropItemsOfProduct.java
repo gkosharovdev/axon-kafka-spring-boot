@@ -6,8 +6,7 @@ import org.axonframework.modelling.command.TargetAggregateIdentifier;
 
 @Value(staticConstructor = "of")
 public class DropItemsOfProduct {
-    @TargetAggregateIdentifier
-    OrderId orderId;
-    String productId;
-    int numberOfItems;
+  @TargetAggregateIdentifier OrderId orderId;
+  String productId;
+  int numberOfItems;
 }

@@ -6,6 +6,6 @@ import lombok.Value;
 
 @Value(staticConstructor = "of")
 public class OrderInitiated {
-    OrderId orderId;
-    CustomerId customerId;
+  OrderId orderId;
+  CustomerId customerId;
 }
