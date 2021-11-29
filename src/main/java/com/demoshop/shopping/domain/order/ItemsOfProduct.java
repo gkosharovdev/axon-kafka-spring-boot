@@ -2,11 +2,11 @@ package com.demoshop.shopping.domain.order;
 
 import lombok.Value;
 
-import javax.money.MonetaryAmount;
+import java.math.BigDecimal;
 
 @Value(staticConstructor = "of")
 public class ItemsOfProduct {
     String productId;
     int quantity;
-    MonetaryAmount cost;
+    BigDecimal cost;
 }

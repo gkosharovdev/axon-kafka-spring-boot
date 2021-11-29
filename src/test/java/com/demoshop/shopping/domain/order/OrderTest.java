@@ -10,11 +10,12 @@ import com.demoshop.shopping.domain.order.events.OrderAbandoned;
 import com.demoshop.shopping.domain.order.events.OrderInitiated;
 import org.axonframework.test.aggregate.AggregateTestFixture;
 import org.axonframework.test.aggregate.FixtureConfiguration;
-import org.javamoney.moneta.Money;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
 import org.junit.jupiter.api.Test;
+
+import java.math.BigDecimal;
 
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
 class OrderTest {
@@ -43,12 +44,12 @@ class OrderTest {
     var testCustomer = CustomerId.of("TEST_CUSTOMER");
     var testOrder = OrderId.of("TEST_ORDER_1");
     var testProduct = "TEST_PRODUCT";
-    var addItemsOfProduct = AddItemsOfProduct.of(testOrder, testProduct, 5, Money.of(5, "EUR"));
+    var addItemsOfProduct = AddItemsOfProduct.of(testOrder, testProduct, 5, new BigDecimal(5));
     fixture
         .given(OrderInitiated.of(testOrder, testCustomer))
         .when(addItemsOfProduct)
         .expectSuccessfulHandlerExecution()
-        .expectEvents(ItemsOfProductAdded.of(testProduct, testOrder, 5, Money.of(5, "EUR")));
+        .expectEvents(ItemsOfProductAdded.of(testProduct, testOrder, 5, new BigDecimal(5)));
   }
 
   @Test
@@ -56,12 +57,12 @@ class OrderTest {
     var testCustomer = CustomerId.of("TEST_CUSTOMER");
     var testOrder = OrderId.of("TEST_ORDER_1");
     var testProduct = "TEST_PRODUCT";
-    var addItemsOfProduct = AddItemsOfProduct.of(testOrder, testProduct, 5, Money.of(5, "EUR"));
+    var addItemsOfProduct = AddItemsOfProduct.of(testOrder, testProduct, 5, new BigDecimal(5));
     fixture
-        .given(OrderInitiated.of(testOrder, testCustomer), ItemsOfProductAdded.of(testProduct, testOrder, 3, Money.of(5, "EUR")))
+        .given(OrderInitiated.of(testOrder, testCustomer), ItemsOfProductAdded.of(testProduct, testOrder, 3, new BigDecimal(5)))
         .when(addItemsOfProduct)
         .expectSuccessfulHandlerExecution()
-        .expectEvents(ItemsOfProductAdded.of(testProduct, testOrder, 5, Money.of(5, "EUR")));
+        .expectEvents(ItemsOfProductAdded.of(testProduct, testOrder, 5, new BigDecimal(5)));
   }
 
   @Test
@@ -71,7 +72,7 @@ class OrderTest {
     var testProduct = "TEST_PRODUCT";
     var removeItemsOfProduct = DropItemsOfProduct.of(testOrder, testProduct, 1);
     fixture
-        .given(OrderInitiated.of(testOrder, testCustomer), ItemsOfProductAdded.of(testProduct, testOrder, 3, Money.of(5, "EUR")))
+        .given(OrderInitiated.of(testOrder, testCustomer), ItemsOfProductAdded.of(testProduct, testOrder, 3, new BigDecimal(5)))
         .when(removeItemsOfProduct)
         .expectSuccessfulHandlerExecution()
         .expectEvents(ItemsOfProductRemoved.of(testOrder, testProduct, 1));
@@ -84,7 +85,7 @@ class OrderTest {
     var testProduct = "TEST_PRODUCT";
     var abandonOrder = AbandonOrder.of(testOrder);
     fixture
-        .given(OrderInitiated.of(testOrder, testCustomer), ItemsOfProductAdded.of(testProduct, testOrder, 3, Money.of(5, "EUR")))
+        .given(OrderInitiated.of(testOrder, testCustomer), ItemsOfProductAdded.of(testProduct, testOrder, 3, new BigDecimal(5)))
         .when(abandonOrder)
         .expectSuccessfulHandlerExecution()
         .expectEvents(OrderAbandoned.of(testOrder));

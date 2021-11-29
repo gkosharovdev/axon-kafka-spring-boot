@@ -8,6 +8,7 @@ import com.demoshop.shopping.application.order.commands.InitiateOrder;
 import com.demoshop.shopping.domain.order.CustomerId;
 import com.demoshop.shopping.domain.order.OrderId;
 import com.demoshop.shopping.domain.product.ProductRepository;
+import com.demoshop.shopping.infrastructure.http.OrderDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.axonframework.commandhandling.gateway.CommandGateway;
@@ -22,7 +23,7 @@ public class OrderApplicationServiceImpl implements OrderApplicationService {
   private final ProductRepository productRepository;
 
   @Override
-  public java.lang.String initiateOrder(java.lang.String customerId) {
+  public String initiateOrder(String customerId) {
     var orderId = OrderId.from(CustomerId.of(customerId));
     var initiateOrderCommand = InitiateOrder.of(orderId, CustomerId.of(customerId));
     commandGateway.sendAndWait(initiateOrderCommand);
@@ -30,19 +31,19 @@ public class OrderApplicationServiceImpl implements OrderApplicationService {
   }
 
   @Override
-  public void abandonOrder(java.lang.String orderId) {
+  public void abandonOrder(String orderId) {
     commandGateway.send(AbandonOrder.of(OrderId.of(orderId)));
   }
 
   @Override
-  public void checkoutOrder(java.lang.String orderId) {
+  public void checkoutOrder(String orderId) {
     commandGateway.send(CheckoutOrder.of(OrderId.of(orderId)));
   }
 
   @Override
-  public void addItemsOfProduct(java.lang.String orderId, java.lang.String productId, int quantity) {
+  public void addItemsOfProduct(String orderId, String productId, int quantity) {
     productRepository
-        .findById(productId)
+        .findByProductId(productId)
         .ifPresentOrElse(
             product -> {
               var command =
@@ -57,7 +58,7 @@ public class OrderApplicationServiceImpl implements OrderApplicationService {
   }
 
   @Override
-  public void dropItems(java.lang.String orderId, java.lang.String productId, int quantity) {
+  public void dropItems(String orderId, String productId, int quantity) {
     var command = DropItemsOfProduct.of(OrderId.of(orderId), productId, quantity);
     commandGateway.send(command);
   }
