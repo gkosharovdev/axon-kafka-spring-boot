@@ -27,3 +27,22 @@ spring:
   config:
     activate:
       on-profile: test
+---
+spring:
+  jpa:
+    database: POSTGRESQL
+    show-sql: true
+    hibernate:
+      ddl-auto: create-drop
+    generate-ddl: true
+  datasource:
+    url: jdbc:postgresql://localhost:5432/mydb
+    username: postgres
+    password: postgres
+    driverClassName: org.postgresql.Driver
+  config:
+    activate:
+      on-profile: local
+  sql:
+    init:
+      platform: postgres
