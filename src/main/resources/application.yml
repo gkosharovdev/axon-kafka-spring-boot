@@ -9,6 +9,13 @@ spring:
       discovery:
         all-namespaces: true
 axon:
+  serializer:
+    general:
+      default
+    events:
+      jackson
+    messages:
+      default
   kafka:
     bootstrap-servers: localhost:9092
     client-id: shopping-service
